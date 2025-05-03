@@ -189,6 +189,32 @@ for us it's *Vc α n*, and and one or two α matrices
 that specify the intended map and its inverse.
 
 
+/-
+Brooke:
+
+def LinEqSelf {α : Type*} [CommRing α] [Fintype m] [Fintype n] [DecidableEq m] (P : Matrix m n α) :
+  Matrix m n α ≃ₗ[α] Matrix m n α :=
+{
+    toFun := fun x => x
+    invFun := fun x => x
+    map_add' :=
+        by
+            intros
+            rfl
+    map_smul' :=
+        by
+            intros
+            rfl
+    left_inv :=
+        by
+            intros
+            sorry
+
+    right_inv := sorry
+}
+-/
+
+
 
 ### B. Give Some Examples
 
