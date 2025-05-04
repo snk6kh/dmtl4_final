@@ -1,7 +1,11 @@
 import Mathlib.Data.Matrix.Defs
-
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Notation
 
+import DMT1.Lectures.L10_algebra.vector.vector
+
+open DMT1.Algebra.Vector
 
 
 /- @@@
@@ -18,7 +22,7 @@ to be the function type M → N → α. Indices thus range
 
 over values of arbitrary types. For finite index sets
 
-we will use Fin typesfor both rows and columns. Matrix
+we will use Fin types for both rows and columns. Matrix
 
 (Fin m) (Fin n) α is thus the type of 2 x 2 matrices,
 
@@ -49,8 +53,6 @@ def myMatrix : Matrix (Fin 2) (Fin 2) ℚ :=
  ![0, 2]]
 
 
-
-
 /- @@@
 
 ## Linear Equivalences
@@ -75,7 +77,7 @@ module and comes right back under *inverse*.
 
 For us, a linear equivalence will be between two
 
-*modules*, where scalarscan lack multiplicative
+*modules*, where scalars can lack multiplicative
 
 inverses. So in general there are no fractions or
 
@@ -86,6 +88,7 @@ which is almost a vector space, into one, give it
 multiplicative inverses.
 
 @@@ -/
+
 
 /- @@@
 
@@ -137,7 +140,7 @@ scalars. That's what we should use here.
 
 
 
-Now we want not just any linear mapping but on that
+Now we want not just any linear mapping but one that
 
 is bijective, thus also invertible. So in addition
 
@@ -182,40 +185,60 @@ type for representing linear equivalences between a
 
 module and itself. Parameters will probably have to
 
-include the shared scalar type), α, the *vector* type,
+include the shared scalar type, α, the *vector* type,
 
 for us it's *Vc α n*, and and one or two α matrices
 
 that specify the intended map and its inverse.
 
+--/
+
+#check Matrix
+#eval det myMatrix
+
+-- def LinEqSelf {α : Type*} [CommRing α] [Fintype m] [Fintype n] :
+-- Matrix m n α ≃ₗ[α] Matrix m n α :=
+-- LinearEquiv.refl α (Matrix m n α)
+
+def apply_mult [CommRing α] : (Matrix (Fin n) (Fin n) α) → (Vc α n) → (Vc α n) :=
+    fun m v => ⟨Matrix.mulVec m v.toRep⟩
+
+-- Type
+structure LinEqSelf {α : Type*} [CommRing α] (n : ℕ) where
+    (mat : Matrix (Fin n) (Fin n) α)
+    (inv_mat : Matrix (Fin n) (Fin n) α)
+    (left_inv : mat * inv_mat = 1)
+    (right_inv : inv_mat * mat = 1)
+    (apply_map : (Matrix (Fin n) (Fin n) α) → (Vc α n) → (Vc α n))
+
+
+-- def LinEqSelf {α : Type*} [CommRing α] [Fintype n] [DecidableEq n] :
+-- Matrix n n α ≃ₗ[α] Matrix n n α :=
+-- {
+--     toFun := fun x => x
+--     invFun := fun x => x
+--     map_add' :=
+--         by
+--             intros
+--             rfl
+--     map_smul' :=
+--         by
+--             intros
+--             rfl
+--     left_inv :=
+--         by
+--             unfold Function.LeftInverse
+--             intro x
+--             rfl
+--     right_inv :=
+--         by
+--             unfold Function.RightInverse
+--             unfold Function.LeftInverse
+--             intro x
+--             rfl
+-- }
 
 /-
-Brooke:
-
-def LinEqSelf {α : Type*} [CommRing α] [Fintype m] [Fintype n] [DecidableEq m] (P : Matrix m n α) :
-  Matrix m n α ≃ₗ[α] Matrix m n α :=
-{
-    toFun := fun x => x
-    invFun := fun x => x
-    map_add' :=
-        by
-            intros
-            rfl
-    map_smul' :=
-        by
-            intros
-            rfl
-    left_inv :=
-        by
-            intros
-            sorry
-
-    right_inv := sorry
-}
--/
-
-
-
 ### B. Give Some Examples
 
 
@@ -227,9 +250,29 @@ matrices. If you can, show examples, in 1, 2, and 3
 dimensions. You'll need some kind of function to apply
 
 the map, or its inverse, to a given vector.
+-/
+
+-- 1 dimension (1x1)
 
 
+-- 2 dimensions (2x2)
+def twoMatrix : Matrix (Fin 2) (Fin 2) ℚ :=
+    ![![1, 0],
+    ![0, 2]]
 
+def twoMatrixInv : Matrix (Fin 2) (Fin 2) ℚ :=
+![![1, 0],
+![0, 1/2]]
+
+instance left_inv : twoMatrix * twoMatrixInv = 1 :=
+    by
+        simp [twoMatrix, twoMatrixInv]
+        sorry
+
+-- 3 dimensions (3x3)
+
+
+/-
 ### C. Organize as Extension
 
 
